@@ -1,0 +1,22 @@
+{
+  "name": "hacksphere-3.0-microgrid",
+  "version": "1.0.0",
+  "description": "Smart Energy Microgrid & Demand Forecasting Engine for HackSphere 3.0 on Zoho Catalyst",
+  "scripts": {
+    "build": "npm --prefix client run build",
+    "client:dev": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build",
+    "server": "python server.py",
+    "catalyst:deploy": "npm run build && catalyst deploy"
+  },
+  "keywords": [
+    "hacksphere",
+    "microgrid",
+    "zoho-catalyst",
+    "appsail",
+    "demand-forecasting",
+    "energy"
+  ],
+  "author": "Mohil C",
+  "license": "MIT"
+}

@@ -307,5 +307,7 @@ def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     print("=" * 60)
     print("  HackSphere 3.0 — Smart Energy Microgrid Dashboard")
-    print("=" * 60)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("X_ZOHO_CATALYST_LISTEN_PORT", os.environ.get("PORT", 5000)))
+    debug_mode = os.environ.get("CATALYST_ENV", "dev").lower() == "dev" and port == 5000
+    print(f"  Starting server on port {port} (Catalyst AppSail compatible)")
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)

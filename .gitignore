@@ -10,6 +10,8 @@ __pycache__/
 .env
 *.env
 .env.*
+*.zip
+catalyst_deploy.zip
 
 # Node & Frontend
 node_modules/

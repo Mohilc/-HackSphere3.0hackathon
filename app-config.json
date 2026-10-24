@@ -1,0 +1,9 @@
+{
+  "command": "python server.py",
+  "build_command": "pip install -r requirements.txt",
+  "stack": "python-3.11",
+  "env_variables": {
+    "CATALYST_ENV": "production"
+  },
+  "memory": 1024
+}
