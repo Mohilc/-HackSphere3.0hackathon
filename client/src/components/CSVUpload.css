@@ -1,0 +1,80 @@
+.dropzone {
+  border: 1.5px dashed rgba(139, 92, 246, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(139, 92, 246, 0.04);
+  padding: 22px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 110px;
+}
+
+.dropzone:hover {
+  border-color: var(--accent-purple);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.dropzone.drag-over {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.08);
+  transform: scale(1.02);
+}
+
+.dropzone.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dz-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.dz-icon {
+  color: var(--accent-purple);
+  opacity: 0.8;
+}
+
+.text-purple {
+  color: var(--accent-purple);
+}
+
+.dz-text {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.dz-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.dz-filename {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.dz-meta {
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+}
+
+.card-footer-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hint-text {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}

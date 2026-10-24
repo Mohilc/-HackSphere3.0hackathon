@@ -1,0 +1,102 @@
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all var(--transition);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease both;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.kpi-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(0, 240, 255, 0.2);
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+.kpi-card:hover::before { opacity: 1; }
+
+.kpi-icon-wrap {
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.kpi-icon-wrap.peak { color: var(--accent-orange); }
+.kpi-icon-wrap.mode { color: var(--accent-purple); }
+.kpi-icon-wrap.battery { color: var(--accent-green); }
+.kpi-icon-wrap.alert { color: var(--accent-red); }
+
+.kpi-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.kpi-mode-value {
+  font-size: 1.05rem;
+}
+
+.kpi-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.kpi-card.state-renewable {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.kpi-card.state-renewable .kpi-value { color: var(--accent-green); }
+
+.kpi-card.state-grid {
+  border-color: rgba(77, 124, 255, 0.3);
+}
+.kpi-card.state-grid .kpi-value { color: var(--accent-blue); }
+
+.kpi-card.state-overload {
+  border-color: rgba(239, 68, 68, 0.4);
+  animation: overloadPulse 1.5s infinite;
+}
+.kpi-card.state-overload .kpi-value { color: var(--accent-red); }
+
+@media (max-width: 1100px) {
+  .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .kpi-strip { grid-template-columns: 1fr; }
+}
