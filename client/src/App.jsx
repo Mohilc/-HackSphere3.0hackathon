@@ -9,6 +9,7 @@ import QuickForecast from './components/QuickForecast'
 import CSVUpload from './components/CSVUpload'
 import ManualInput from './components/ManualInput'
 import SystemLog from './components/SystemLog'
+import AiAdvisoryPanel from './components/AiAdvisoryPanel'
 import Footer from './components/Footer'
 import './App.css'
 
@@ -48,6 +49,8 @@ export default function App() {
           <GridTimeline forecast={forecast} />
           <BatteryPanel forecast={forecast} />
         </section>
+
+        <AiAdvisoryPanel forecast={forecast} addLog={addLog} />
 
         <section className="controls-row">
           <QuickForecast onForecast={handleForecast} addLog={addLog} />

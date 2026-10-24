@@ -53,3 +53,11 @@ export const postManualPredict = (row) =>
     method: 'POST',
     body: JSON.stringify(row),
   });
+
+/** AI Grid Advisory (NVIDIA NIM) */
+export const postAiAdvisory = (summary) =>
+  request('/ai-advisory', {
+    method: 'POST',
+    body: JSON.stringify({ summary }),
+  });
+

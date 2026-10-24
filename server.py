@@ -266,6 +266,24 @@ def api_training_stats():
         return jsonify({"error": str(e)}), 500
 
 
+# ── API: AI Grid Advisory (NVIDIA NIM) ────────────────────────────────
+@app.route("/api/ai-advisory", methods=["POST"])
+def api_ai_advisory():
+    """Generate an AI-powered grid health & dispatch strategy assessment."""
+    try:
+        from ai_advisor import generate_ai_advisory
+        body = request.get_json(silent=True) or {}
+        summary = body.get("summary")
+        if not summary:
+            return jsonify({"error": "No forecast summary provided"}), 400
+
+        res = generate_ai_advisory(summary)
+        return jsonify(res)
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
 # ── Helper: data cleaning ────────────────────────────────────────────
 def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """Handle missing values and validate data types."""
