@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Play, Flame, Loader2, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Play, Loader2, Sparkles, Database } from 'lucide-react'
 import { getDemoForecast, getFullForecast } from '../services/api'
 import './QuickForecast.css'
 
@@ -11,14 +11,14 @@ export default function QuickForecast({ onForecast, addLog }) {
   const handleDemo = async () => {
     try {
       setLoadingDemo(true)
-      addLog('info', 'Requesting 24-hour demo forecast from QuickML engine...')
+      addLog('info', 'Requesting 24-hour demand forecast from engine...')
       const res = await getDemoForecast()
       if (res.success) {
         onForecast(res)
         setLastAction('demo')
       }
     } catch (err) {
-      addLog('error', `Demo forecast failed: ${err.message}`)
+      addLog('error', `24h simulation failed: ${err.message}`)
     } finally {
       setLoadingDemo(false)
     }
@@ -27,14 +27,14 @@ export default function QuickForecast({ onForecast, addLog }) {
   const handleFull = async () => {
     try {
       setLoadingFull(true)
-      addLog('info', 'Executing full dataset forecast across sample test input...')
+      addLog('info', 'Evaluating full sample test dataset (1,000 rows)...')
       const res = await getFullForecast()
       if (res.success) {
         onForecast(res)
         setLastAction('full')
       }
     } catch (err) {
-      addLog('error', `Full forecast failed: ${err.message}`)
+      addLog('error', `Full evaluation failed: ${err.message}`)
     } finally {
       setLoadingFull(false)
     }
@@ -43,12 +43,12 @@ export default function QuickForecast({ onForecast, addLog }) {
   return (
     <div className="control-card">
       <div className="card-top">
-        <div className="icon-wrapper icon-cyan">
+        <div className="icon-wrapper icon-green">
           <Sparkles size={20} />
         </div>
         <div>
           <h4>Instant Forecasting</h4>
-          <p className="card-desc">Simulate with pre-loaded telemetry data</p>
+          <p className="card-desc">Simulate pre-loaded 24h & test telemetry</p>
         </div>
       </div>
 
@@ -60,7 +60,7 @@ export default function QuickForecast({ onForecast, addLog }) {
         >
           {loadingDemo ? (
             <>
-              <Loader2 size={16} className="btn-spinner" /> Running 24h Sim...
+              <Loader2 size={16} className="btn-spinner" /> Running 24h Forecast...
             </>
           ) : (
             <>
@@ -80,18 +80,21 @@ export default function QuickForecast({ onForecast, addLog }) {
             </>
           ) : (
             <>
-              <Flame size={16} /> Run Full Test Dataset
+              <Database size={16} /> Evaluate Full Test Set (1,000 rows)
             </>
           )}
         </button>
       </div>
 
-      {lastAction && (
-        <div className="last-run-status">
-          <CheckCircle2 size={14} className="text-green" />
-          <span>Last ran: {lastAction === 'demo' ? '24-Hour Horizon' : 'Full Evaluation'}</span>
-        </div>
-      )}
+      <div className="card-footer-info">
+        {lastAction === 'demo' ? (
+          <span className="status-note green-note">Active: 24h Horizon Forecast Loaded</span>
+        ) : lastAction === 'full' ? (
+          <span className="status-note green-note">Active: Full 1,000-Row Dataset Evaluated</span>
+        ) : (
+          <span className="status-note">Ready to simulate 24-hour microgrid load</span>
+        )}
+      </div>
     </div>
   )
 }

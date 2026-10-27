@@ -10,8 +10,10 @@ __pycache__/
 .env
 *.env
 .env.*
+!.env.example
 *.zip
 catalyst_deploy.zip
+catalyst_deploy/
 
 # Node & Frontend
 node_modules/
@@ -20,9 +22,45 @@ client/dist/
 .npm
 .yarn
 
-# OS / Editor
+# OS / Editor / IDE
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Catalyst Local State & Pre-compiled Container Packages
+.catalyst/
+.catalystrc
+appsail-python/*.dist-info/
+appsail-python/*.libs/
+appsail-python/numpy/
+appsail-python/scipy/
+appsail-python/pandas/
+appsail-python/sklearn/
+appsail-python/scikit_learn*/
+appsail-python/flask/
+appsail-python/flask_cors/
+appsail-python/werkzeug/
+appsail-python/jinja2/
+appsail-python/markupsafe/
+appsail-python/itsdangerous/
+appsail-python/click/
+appsail-python/blinker/
+appsail-python/gunicorn/
+appsail-python/requests/
+appsail-python/urllib3/
+appsail-python/certifi/
+appsail-python/charset_normalizer/
+appsail-python/idna/
+appsail-python/pytz/
+appsail-python/tzdata/
+appsail-python/joblib/
+appsail-python/threadpoolctl/
+appsail-python/cloudpickle/
+appsail-python/dateutil/
+appsail-python/python_dateutil*/
+appsail-python/bin/
+appsail-python/client/
+appsail-python/HackSphere_Starter_Kit/
+appsail-python/__pycache__/

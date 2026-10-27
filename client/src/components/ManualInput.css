@@ -13,45 +13,65 @@
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .input-group label {
   font-size: 0.68rem;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .input-group input {
-  background: rgba(10, 16, 32, 0.7);
+  background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
   color: var(--text-primary);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-family: var(--font-mono);
   outline: none;
   transition: var(--transition);
 }
 
 .input-group input:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 10px rgba(77, 124, 255, 0.2);
+  border-color: var(--accent-green-border);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+}
+
+.manual-error-alert {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid var(--accent-red-border);
+  color: #fca5a5;
+  font-size: 0.72rem;
 }
 
 .probe-btn {
   width: 100%;
 }
 
+/* ── Result Card ─────────────────────────────────────────────────── */
 .probe-result-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px 12px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   animation: fadeIn 0.3s ease;
+}
+
+.probe-result-card.card-has-overload {
+  border-color: var(--accent-red-border);
+  background: rgba(239, 68, 68, 0.04);
 }
 
 .pr-row {
@@ -60,11 +80,22 @@
   align-items: center;
 }
 
+.pr-kw-group {
+  display: flex;
+  flex-direction: column;
+}
+
 .pr-kw {
-  font-size: 1.1rem;
-  font-weight: 700;
   font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 800;
   color: var(--text-primary);
+}
+
+.pr-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 .pr-mode-badge {
@@ -72,46 +103,58 @@
   align-items: center;
   gap: 5px;
   font-size: 0.72rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
 }
 
-.pr-mode-badge.mode-ren {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--accent-orange);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+.mode-ren {
+  background: var(--accent-green-dim);
+  border: 1px solid var(--accent-green-border);
+  color: var(--accent-green);
 }
 
-.pr-mode-badge.mode-grid {
-  background: rgba(0, 240, 255, 0.12);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+.mode-grid {
+  background: var(--grid-main-dark);
+  border: 1px solid var(--grid-main-border);
+  color: var(--grid-main-text);
 }
 
-.pr-meta {
+.pr-details {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-size: 0.7rem;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.pr-alert {
-  color: var(--accent-red);
+.pr-alert-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-weight: 600;
+  background: var(--accent-red);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
 }
 
-.pr-safe {
+.pr-safe-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.1);
   color: var(--accent-green);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  font-size: 0.68rem;
+  padding: 2px 6px;
+  border-radius: 3px;
 }
 
-.pr-peak {
-  color: #c4b5fd;
-  font-weight: 500;
+.pr-tag-pill {
+  font-size: 0.68rem;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
 }

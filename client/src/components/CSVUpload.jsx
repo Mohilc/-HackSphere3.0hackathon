@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle2, AlertTriangle, FileUp } from 'lucide-react'
 import { uploadCSV } from '../services/api'
 import './CSVUpload.css'
 
@@ -8,19 +8,43 @@ export default function CSVUpload({ onForecast, addLog }) {
   const [uploading, setUploading] = useState(false)
   const [fileName, setFileName] = useState(null)
   const [fileStats, setFileStats] = useState(null)
+  const [validationError, setValidationError] = useState(null)
   const fileInputRef = useRef(null)
 
-  const processFile = async (file) => {
+  const validateAndProcessFile = async (file) => {
     if (!file) return
-    if (!file.name.endsWith('.csv')) {
-      addLog('error', 'Invalid file type. Please upload a .csv file.')
+    setValidationError(null)
+
+    // 1. Strict extension check
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      const msg = `Unsupported file type "${file.name}". Only standard telemetry .csv files are supported.`
+      setValidationError(msg)
+      addLog('error', msg)
       return
     }
 
+    // 2. Client-side header preview check
+    try {
+      const textPreview = await file.slice(0, 1024).text()
+      const firstLine = textPreview.split('\n')[0].toLowerCase()
+      const requiredCols = ['timestamp', 'ambient_temp_c', 'humidity_pct', 'solar_irradiance_wm2']
+      const missing = requiredCols.filter(col => !firstLine.includes(col))
+      
+      if (missing.length > 0) {
+        const msg = `CSV missing required column(s): ${missing.join(', ')}`
+        setValidationError(msg)
+        addLog('error', msg)
+        return
+      }
+    } catch {
+      // If preview fails, proceed to backend validation
+    }
+
+    // 3. Send to Backend
     try {
       setUploading(true)
       setFileName(file.name)
-      addLog('info', `Uploading & evaluating telemetry file: ${file.name} (${(file.size / 1024).toFixed(1)} KB)...`)
+      addLog('info', `Ingesting telemetry CSV: ${file.name} (${(file.size / 1024).toFixed(1)} KB)...`)
 
       const res = await uploadCSV(file)
       if (res.success) {
@@ -29,10 +53,12 @@ export default function CSVUpload({ onForecast, addLog }) {
           rows: res.rows_processed,
           alerts: res.forecast.summary.overload_alerts,
         })
-        addLog('success', `CSV processed: ${res.rows_processed} rows evaluated.`)
+        addLog('success', `CSV Ingestion complete: ${res.rows_processed} rows evaluated.`)
       }
     } catch (err) {
-      addLog('error', `CSV Processing failed: ${err.message}`)
+      const msg = `CSV upload failed: ${err.message}`
+      setValidationError(msg)
+      addLog('error', msg)
       setFileName(null)
     } finally {
       setUploading(false)
@@ -43,19 +69,19 @@ export default function CSVUpload({ onForecast, addLog }) {
     e.preventDefault()
     setDragOver(false)
     const file = e.dataTransfer.files[0]
-    processFile(file)
+    validateAndProcessFile(file)
   }
 
   const handleSelect = (e) => {
     const file = e.target.files[0]
-    processFile(file)
+    validateAndProcessFile(file)
     e.target.value = '' // Reset so same file can be re-selected
   }
 
   return (
     <div className="control-card">
       <div className="card-top">
-        <div className="icon-wrapper icon-purple">
+        <div className="icon-wrapper icon-green">
           <UploadCloud size={20} />
         </div>
         <div>
@@ -65,7 +91,9 @@ export default function CSVUpload({ onForecast, addLog }) {
       </div>
 
       <div
-        className={`dropzone ${dragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
+        className={`dropzone ${dragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''} ${
+          validationError ? 'dz-has-error' : ''
+        }`}
         onDragOver={(e) => {
           e.preventDefault()
           setDragOver(true)
@@ -84,30 +112,40 @@ export default function CSVUpload({ onForecast, addLog }) {
 
         {uploading ? (
           <div className="dz-content">
-            <Loader2 size={24} className="btn-spinner text-purple" />
-            <span className="dz-text">Parsing and scoring features...</span>
+            <Loader2 size={24} className="btn-spinner text-green" />
+            <span className="dz-text">Parsing telemetry and scoring features...</span>
           </div>
         ) : fileName ? (
           <div className="dz-content">
-            <FileSpreadsheet size={24} className="text-purple" />
+            <FileSpreadsheet size={24} className="text-green" />
             <span className="dz-filename">{fileName}</span>
             {fileStats && (
               <span className="dz-meta">
-                {fileStats.rows} rows · {fileStats.alerts} overload events
+                <CheckCircle2 size={12} className="inline-check" />
+                {fileStats.rows} rows · {fileStats.alerts} overload event(s)
               </span>
             )}
           </div>
         ) : (
           <div className="dz-content">
-            <UploadCloud size={24} className="dz-icon" />
-            <span className="dz-text">Drop test_telemetry.csv or click to browse</span>
-            <span className="dz-sub">Accepts standard weather & demand schema</span>
+            <FileUp size={24} className="dz-icon" />
+            <span className="dz-text">Drop .csv file or click to browse</span>
+            <span className="dz-sub">Accepts hourly weather & irradiance records</span>
           </div>
         )}
       </div>
 
+      {validationError && (
+        <div className="dz-error-banner">
+          <AlertTriangle size={14} />
+          <span>{validationError}</span>
+        </div>
+      )}
+
       <div className="card-footer-info">
-        <span className="hint-text">Required: timestamp, ambient_temp_c, humidity_pct, solar_irradiance_wm2</span>
+        <span className="hint-text">
+          Required: <code>timestamp</code>, <code>ambient_temp_c</code>, <code>humidity_pct</code>, <code>solar_irradiance_wm2</code>
+        </span>
       </div>
     </div>
   )

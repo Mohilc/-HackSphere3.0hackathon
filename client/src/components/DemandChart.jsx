@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,7 +11,7 @@ import {
   Filler,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { Activity, ShieldAlert, Zap, Layers } from 'lucide-react'
+import { Activity, ShieldAlert, Sun, Power } from 'lucide-react'
 import './DemandChart.css'
 
 ChartJS.register(
@@ -26,8 +26,6 @@ ChartJS.register(
 )
 
 export default function DemandChart({ forecast }) {
-  const [filterMode, setFilterMode] = useState('all') // 'all', 'peak', 'overload'
-
   const hourlyData = forecast?.forecast?.hourly || []
 
   const chartData = useMemo(() => {
@@ -35,7 +33,7 @@ export default function DemandChart({ forecast }) {
 
     const labels = hourlyData.map((d) => {
       const date = new Date(d.timestamp)
-      const hourStr = isNaN(date.getTime()) 
+      const hourStr = isNaN(date.getTime())
         ? `H+${d.hour || 0}`
         : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
       return hourStr
@@ -46,14 +44,14 @@ export default function DemandChart({ forecast }) {
     const threshold200 = hourlyData.map(() => 200)
 
     const pointBg = hourlyData.map((d) => {
-      if (d.overload_alert) return '#ef4444' // Red alert
-      if (d.is_peak_hour || d.predicted_demand_kw > 160) return '#f59e0b' // Orange renewable
-      return '#00f0ff' // Cyan normal
+      if (d.overload_alert) return '#ef4444' // Red for overload >= 200 kW
+      if (d.grid_mode === 'Renewable Storage') return '#10b981' // Green for Renewable Mode
+      return '#64748b' // Dark Neutral for Main Grid
     })
 
     const pointRadius = hourlyData.map((d) => {
-      if (d.overload_alert) return 6
-      if (d.is_peak_hour) return 5
+      if (d.overload_alert) return 6.5
+      if (d.grid_mode === 'Renewable Storage') return 4.5
       return 3.5
     })
 
@@ -63,16 +61,16 @@ export default function DemandChart({ forecast }) {
         {
           label: 'Critical Overload (200 kW)',
           data: threshold200,
-          borderColor: 'rgba(239, 68, 68, 0.7)',
-          borderWidth: 1.5,
+          borderColor: 'rgba(239, 68, 68, 0.85)',
+          borderWidth: 2,
           borderDash: [6, 4],
           pointRadius: 0,
           fill: false,
         },
         {
-          label: 'Renewable Storage Threshold (160 kW)',
+          label: 'Renewable Threshold (160 kW)',
           data: threshold160,
-          borderColor: 'rgba(245, 158, 11, 0.7)',
+          borderColor: 'rgba(16, 185, 129, 0.75)',
           borderWidth: 1.5,
           borderDash: [4, 4],
           pointRadius: 0,
@@ -81,23 +79,23 @@ export default function DemandChart({ forecast }) {
         {
           label: 'Predicted Demand (kW)',
           data: demands,
-          borderColor: '#00f0ff',
+          borderColor: '#10b981',
           backgroundColor: (context) => {
             const ctx = context.chart.ctx
             const gradient = ctx.createLinearGradient(0, 0, 0, 360)
-            gradient.addColorStop(0, 'rgba(0, 240, 255, 0.35)')
-            gradient.addColorStop(0.6, 'rgba(139, 92, 246, 0.12)')
-            gradient.addColorStop(1, 'rgba(12, 18, 34, 0.0)')
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.22)')
+            gradient.addColorStop(0.7, 'rgba(16, 185, 129, 0.04)')
+            gradient.addColorStop(1, 'rgba(8, 10, 15, 0.0)')
             return gradient
           },
           borderWidth: 2.5,
           pointBackgroundColor: pointBg,
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 1.5,
+          pointBorderColor: '#0a0d14',
+          pointBorderWidth: 2,
           pointRadius: pointRadius,
           pointHoverRadius: 8,
           fill: true,
-          tension: 0.35,
+          tension: 0.32,
         },
       ],
     }
@@ -116,19 +114,19 @@ export default function DemandChart({ forecast }) {
         position: 'top',
         align: 'end',
         labels: {
-          color: '#8892a8',
-          boxWidth: 12,
-          boxHeight: 12,
+          color: '#94a3b8',
+          boxWidth: 14,
+          boxHeight: 14,
           usePointStyle: true,
           pointStyle: 'circle',
           font: { family: 'Inter', size: 11, weight: '500' },
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(10, 16, 32, 0.95)',
-        titleColor: '#e8eaf6',
+        backgroundColor: '#0c0f17',
+        titleColor: '#f8fafc',
         bodyColor: '#cbd5e1',
-        borderColor: 'rgba(0, 240, 255, 0.3)',
+        borderColor: '#262d3d',
         borderWidth: 1,
         padding: 12,
         boxPadding: 6,
@@ -139,10 +137,10 @@ export default function DemandChart({ forecast }) {
             if (idx === undefined || !hourlyData[idx]) return []
             const item = hourlyData[idx]
             return [
-              `Grid Mode: ${item.grid_mode}`,
-              `Peak Window (18-22h): ${item.is_peak_hour ? 'YES' : 'NO'}`,
-              `Battery SOC: ${item.battery_soc_pct}%`,
-              item.overload_alert ? '🚨 CRITICAL OVERLOAD ALERT' : '',
+              `⚡ Mode: ${item.grid_mode}`,
+              `🔋 Battery SOC: ${item.battery_soc_pct}% (${item.battery_soc_kwh} kWh)`,
+              `⏱ Peak Window (18–22h): ${item.is_peak_hour ? 'ACTIVE' : 'NO'}`,
+              item.overload_alert ? '🚨 CRITICAL OVERLOAD (≥200 kW)' : '',
             ].filter(Boolean)
           },
         },
@@ -156,7 +154,7 @@ export default function DemandChart({ forecast }) {
       y: {
         min: 0,
         suggestedMax: 240,
-        grid: { color: 'rgba(255, 255, 255, 0.06)' },
+        grid: { color: 'rgba(255, 255, 255, 0.05)' },
         ticks: {
           color: '#64748b',
           font: { family: 'Inter', size: 11 },
@@ -171,25 +169,25 @@ export default function DemandChart({ forecast }) {
       <div className="chart-header">
         <div className="chart-title-group">
           <div className="chart-icon-box">
-            <Activity className="chart-icon" />
+            <Activity className="chart-icon" size={20} />
           </div>
           <div>
             <h3>24-Hour Microgrid Demand Forecast</h3>
             <p className="chart-subtitle">
-              Real-time predictive telemetry · QuickML ML Engine · Dynamic Switch Thresholds
+              Predicted load (kW) vs. Automated Power Source Switching Thresholds
             </p>
           </div>
         </div>
 
-        <div className="chart-badges">
-          <span className="badge badge-cyan">
-            <Zap size={13} /> Main &lt; 160 kW
+        <div className="chart-legend-pills">
+          <span className="pill pill-renewable">
+            <Sun size={12} /> Renewable (&gt;160 kW or 18–22h)
           </span>
-          <span className="badge badge-amber">
-            <Layers size={13} /> Renewable &ge; 160 kW | 18-22h
+          <span className="pill pill-grid">
+            <Power size={12} /> Main Grid (&le;160 kW)
           </span>
-          <span className="badge badge-red">
-            <ShieldAlert size={13} /> Overload &ge; 200 kW
+          <span className="pill pill-overload">
+            <ShieldAlert size={12} /> Overload (&ge;200 kW)
           </span>
         </div>
       </div>
@@ -199,10 +197,10 @@ export default function DemandChart({ forecast }) {
           <Line data={chartData} options={chartOptions} />
         ) : (
           <div className="chart-empty-state">
-            <Activity size={48} className="empty-icon pulse-animation" />
+            <Activity size={44} className="empty-icon" />
             <h4>No Active Telemetry Forecast</h4>
             <p>
-              Trigger a 24-hour simulation below or upload a custom CSV dataset to view real-time energy demand curves and controller decisions.
+              Run the 24-hour simulation below or upload a custom telemetry CSV to generate predictive demand curves.
             </p>
           </div>
         )}

@@ -1,31 +1,36 @@
 .dropzone {
-  border: 1.5px dashed rgba(139, 92, 246, 0.35);
+  border: 1.5px dashed #2d3748;
   border-radius: var(--radius-sm);
-  background: rgba(139, 92, 246, 0.04);
-  padding: 22px 14px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 18px 14px;
   cursor: pointer;
   transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 110px;
+  min-height: 105px;
 }
 
 .dropzone:hover {
-  border-color: var(--accent-purple);
-  background: rgba(139, 92, 246, 0.08);
+  border-color: var(--accent-green-border);
+  background: rgba(16, 185, 129, 0.04);
 }
 
 .dropzone.drag-over {
-  border-color: var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.08);
-  transform: scale(1.02);
+  border-color: var(--accent-green);
+  background: rgba(16, 185, 129, 0.08);
+  transform: scale(1.01);
 }
 
 .dropzone.disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.dropzone.dz-has-error {
+  border-color: var(--accent-red-border);
+  background: rgba(239, 68, 68, 0.04);
 }
 
 .dz-content {
@@ -36,45 +41,65 @@
 }
 
 .dz-icon {
-  color: var(--accent-purple);
-  opacity: 0.8;
+  color: var(--text-muted);
 }
 
-.text-purple {
-  color: var(--accent-purple);
+.text-green {
+  color: var(--accent-green);
+}
+
+.inline-check {
+  color: var(--accent-green);
+  margin-right: 4px;
 }
 
 .dz-text {
-  font-size: 0.82rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .dz-sub {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
 }
 
 .dz-filename {
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-primary);
   font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-green);
 }
 
 .dz-meta {
   font-size: 0.72rem;
-  color: var(--accent-cyan);
-}
-
-.card-footer-info {
+  color: var(--text-secondary);
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
+.dz-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid var(--accent-red-border);
+  color: #fca5a5;
+  font-size: 0.72rem;
+}
+
 .hint-text {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
-  line-height: 1.3;
+  line-height: 1.4;
+}
+
+.hint-text code {
+  font-family: var(--font-mono);
+  background: #141926;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #cbd5e1;
 }

@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="footer-content">
         <div className="footer-left">
           <div className="footer-brand">
-            <Zap size={16} className="text-cyan" />
+            <Zap size={15} className="text-green" />
             <span>HackSphere 3.0</span>
           </div>
           <span className="footer-sep">&bull;</span>
@@ -18,15 +18,15 @@ export default function Footer() {
 
         <div className="footer-center">
           <span className="footer-rule-pill">
-            <Cpu size={13} /> Random Forest Regressor · QuickML
+            <Cpu size={13} /> QuickML ML Engine
           </span>
           <span className="footer-rule-pill">
-            <ShieldCheck size={13} /> Thresholds: 160 kW / 200 kW / 18-22h Peak
+            <ShieldCheck size={13} /> Grid Thresholds: 160 kW Renewable &bull; 200 kW Overload &bull; 18–22h Peak
           </span>
         </div>
 
         <div className="footer-right">
-          <span>Zoho Catalyst Cloud Integration</span>
+          <span>Zoho Catalyst AppSail Production</span>
         </div>
       </div>
     </footer>

@@ -1,11 +1,8 @@
 {
   "appsail": [
     {
-      "source": ".",
-      "name": "hacksphere-microgrid"
+      "source": "appsail-python",
+      "name": "hacksphere-microgrid-1"
     }
-  ],
-  "client": {
-    "source": "client/dist"
-  }
+  ]
 }

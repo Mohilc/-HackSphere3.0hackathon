@@ -35,7 +35,8 @@ def ensure_frontend_built():
     dist_dir = ROOT / "client" / "dist"
     if not dist_dir.exists() or not any(dist_dir.iterdir()):
         print("[Packager] client/dist missing. Running build...")
-        subprocess.run(["npm", "--prefix", "client", "run", "build"], cwd=ROOT, check=True)
+        npm_cmd = "npm.cmd" if os.name == "nt" else "npm"
+        subprocess.run([npm_cmd, "--prefix", "client", "run", "build"], cwd=ROOT, check=True, shell=(os.name == "nt"))
     else:
         print("[Packager] Found existing client/dist build.")
 

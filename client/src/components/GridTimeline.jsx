@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { GitCommit, ArrowRightLeft, ShieldAlert, Sparkles, Clock } from 'lucide-react'
+import { GitCommit, ArrowRightLeft, ShieldAlert, Clock, Sun, Power } from 'lucide-react'
 import './GridTimeline.css'
 
 export default function GridTimeline({ forecast }) {
@@ -22,12 +22,12 @@ export default function GridTimeline({ forecast }) {
       <div className="timeline-header">
         <div className="timeline-title-group">
           <div className="timeline-icon-box">
-            <ArrowRightLeft className="timeline-icon" />
+            <ArrowRightLeft className="timeline-icon" size={18} />
           </div>
           <div>
-            <h3>Grid Transition Timeline</h3>
+            <h3>Grid Transition Sequence</h3>
             <p className="timeline-subtitle">
-              Automated power-source routing schedule (Main Grid &harr; Renewable Storage)
+              Automated power-source routing timeline: Main Grid (&le;160 kW) &harr; Renewable Storage (&gt;160 kW or 18–22h)
             </p>
           </div>
         </div>
@@ -38,7 +38,7 @@ export default function GridTimeline({ forecast }) {
               <Clock size={12} /> {hourly.length}h Horizon
             </span>
             <span className="stat-pill highlight">
-              <Sparkles size={12} /> {switchCount} Mode Switches
+              Mode Switches: {switchCount}
             </span>
           </div>
         )}
@@ -48,7 +48,7 @@ export default function GridTimeline({ forecast }) {
         {hourly.length === 0 ? (
           <div className="timeline-empty">
             <GitCommit size={36} className="empty-icon-sm" />
-            <p>Run a forecast to view hourly power source transition sequence.</p>
+            <p>Run a 24-hour simulation or upload telemetry CSV to view hourly power dispatch signals.</p>
           </div>
         ) : (
           <div className="timeline-track">
@@ -56,7 +56,7 @@ export default function GridTimeline({ forecast }) {
               const isRenewable = item.grid_mode === 'Renewable Storage'
               const date = new Date(item.timestamp)
               const hourLabel = isNaN(date.getTime())
-                ? `${item.hour}:00`
+                ? `${String(item.hour).padStart(2, '0')}:00`
                 : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
 
               const isSwitchPoint =
@@ -70,30 +70,38 @@ export default function GridTimeline({ forecast }) {
                   }`}
                 >
                   {isSwitchPoint && (
-                    <div className="switch-indicator" title="Source Transition Triggered">
-                      &bull; SWITCH &bull;
+                    <div className="switch-indicator" title="Grid Dispatch Transition Triggered">
+                      SWITCH
                     </div>
                   )}
 
                   <div className="node-time">{hourLabel}</div>
                   
-                  <div className="node-status-bar"></div>
+                  <div className="node-status-bar" />
 
                   <div className="node-content">
                     <span className="node-mode">
-                      {isRenewable ? 'Renewable' : 'Main Grid'}
+                      {isRenewable ? (
+                        <>
+                          <Sun size={11} className="inline-icon" /> Renewable
+                        </>
+                      ) : (
+                        <>
+                          <Power size={11} className="inline-icon" /> Main Grid
+                        </>
+                      )}
                     </span>
                     <span className="node-kw">{item.predicted_demand_kw} kW</span>
                   </div>
 
                   <div className="node-tags">
                     {item.overload_alert && (
-                      <span className="node-tag alert" title="Demand &ge; 200 kW">
-                        <ShieldAlert size={10} /> Overload
+                      <span className="node-tag alert" title="Critical Overload: Demand ≥ 200 kW">
+                        <ShieldAlert size={10} /> OVERLOAD
                       </span>
                     )}
                     {item.is_peak_hour && (
-                      <span className="node-tag peak" title="Peak window 18-22h">
+                      <span className="node-tag peak" title="Peak window: 18:00–22:00">
                         Peak
                       </span>
                     )}
@@ -103,6 +111,19 @@ export default function GridTimeline({ forecast }) {
             })}
           </div>
         )}
+      </div>
+
+      {/* Legend Footer */}
+      <div className="timeline-footer">
+        <span className="tl-legend-item">
+          <span className="legend-indicator ren" /> Green = Renewable Storage Mode
+        </span>
+        <span className="tl-legend-item">
+          <span className="legend-indicator grid" /> Dark Neutral = Main Grid Mode
+        </span>
+        <span className="tl-legend-item">
+          <span className="legend-indicator ovl" /> Red = Critical Overload (&ge;200 kW)
+        </span>
       </div>
     </div>
   )

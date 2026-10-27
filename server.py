@@ -6,9 +6,15 @@ predictions, forecasts, CSV upload, and transition evaluation.
 
 import io
 import os
+import sys
 import json
 import traceback
 from datetime import datetime
+
+# Ensure local packages in current directory are loaded first
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 import numpy as np
 import pandas as pd
@@ -66,11 +72,25 @@ def model_info():
         model = get_model()
         return jsonify({
             "status": "loaded",
+            "pipeline": "Zoho Catalyst QuickML Pipeline & High-Accuracy GBR Fallback",
+            "quickml_endpoint": os.environ.get(
+                "QUICKML_ENDPOINT_URL",
+                "https://api.catalyst.zoho.in/quickml/v1/project/90488000000013051/endpoints/predict",
+            ),
+            "quickml_active": bool(os.environ.get("QUICKML_ENDPOINT_KEY")),
             "type": type(model).__name__,
-            "n_estimators": model.n_estimators,
-            "max_depth": model.max_depth,
+            "n_estimators": getattr(model, "n_estimators", 150),
+            "max_depth": getattr(model, "max_depth", 4),
             "features": FEATURE_COLS,
             "n_features": len(FEATURE_COLS),
+            "decision_rules": {
+                "renewable_storage": "Demand > 160.0 kW OR Hour ∈ [18:00, 22:00]",
+                "main_grid": "Demand <= 160.0 kW AND Hour ∉ [18:00, 22:00]",
+                "critical_overload": "Demand >= 200.0 kW (Independent Alert)",
+                "battery_capacity_kwh": 500.0,
+                "battery_reserve_floor_pct": 10.0,
+                "battery_charge_rate_kw": 50.0,
+            },
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -307,7 +327,6 @@ def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     print("=" * 60)
     print("  HackSphere 3.0 — Smart Energy Microgrid Dashboard")
-    port = int(os.environ.get("X_ZOHO_CATALYST_LISTEN_PORT", os.environ.get("PORT", 5000)))
-    debug_mode = os.environ.get("CATALYST_ENV", "dev").lower() == "dev" and port == 5000
+    port = int(os.environ.get("X_ZOHO_CATALYST_LISTEN_PORT", os.environ.get("PORT", 9000)))
     print(f"  Starting server on port {port} (Catalyst AppSail compatible)")
-    app.run(host="0.0.0.0", port=port, debug=debug_mode)
+    app.run(host="0.0.0.0", port=port, debug=False)
